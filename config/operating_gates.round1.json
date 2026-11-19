@@ -1,0 +1,36 @@
+{
+  "_huong_dan": "Cổng vận hành (không cần sửa code). null = chưa đặt cổng này. Giải thích từng khoá: docs/guide.md, mục 'Cổng trong config'.",
+  "business": {
+    "daily_refund_cap_vnd": 1500000,
+    "cost_budget_per_ticket_vnd": 1500,
+    "pilot_scope": {
+      "mode": "all",
+      "warehouses": [],
+      "percent": 100
+    },
+    "roi_min": 0.25
+  },
+  "operations": {
+    "pic": "NV-TUNG",
+    "approver_id": "NV-HANH",
+    "reviewers_on_shift": 1,
+    "review_capacity_per_hour": 6,
+    "max_queue_wait_minutes": 60,
+    "stop_conditions": [
+      "Khi có 1 ca lộ PII ra bên thứ ba thì tắt notify_carrier/send_reply",
+      "Khi có 1 lỗi ghi oan cho hãng vận chuyển thì tắt file_carrier_fault",
+      "Khi hàng chờ vượt SLA 60 phút liên tiếp thì thu hẹp pilot_scope"
+    ],
+    "alert_channel": "slack:#logix-refund-pilot-alerts",
+    "decision_note": true,
+    "review_sampling_pct": 10
+  },
+  "legal": {
+    "pii_fields_blocked_to_third_party": [
+      "phone",
+      "street",
+      "customer_note"
+    ],
+    "carrier_fault_requires_recorded_cause": true
+  }
+}
