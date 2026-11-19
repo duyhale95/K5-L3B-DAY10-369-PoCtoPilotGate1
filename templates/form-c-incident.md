@@ -409,13 +409,13 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 |---|---|
 | Commit ký tiêu chí | `6e4f816` (`Sign acceptance criteria`) |
 | Hash chốt cổng vòng 1 | `3e45ad2b` |
-| Mã lần chạy dùng làm bằng chứng | S6 · base `R-S6-before-20261119-172613-ab2583` · prepared `R-S6-prepared-20261119-172613-ab2583` · after `R-S6-after-20261119-172613-ab2583` |
+| Mã lần chạy dùng làm bằng chứng | S6 · base `R-S6-before-20261119-173150-704885` · prepared `R-S6-prepared-20261119-173150-704885` · after `R-S6-after-20261119-173150-704885` |
 | Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Không. Mốc after không có dòng vượt trần và đạt mọi ngưỡng đã ký. |
 | Kho hoặc hãng có số xấu nhất. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? | S6: kho `HCM` cao nhất ở 5.661đ/ticket. Bộ nền: kho chưa xác định `?` là 10.359đ/ticket, cao hơn 10.000đ làm tay, trên 5 trials. Giữ quyết định chung vì cả hai bộ đạt ngưỡng và các kho đã xác định vẫn rẻ hơn làm tay. Theo dõi riêng nhóm chưa rõ kho trong pilot. |
 | Quyết định (khoanh một) | **Tiếp tục** |
-| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | Mốc after `R-S6-after-20261119-172613-ab2583` đạt 5/5 `required` trên S6. `pass_rate = pass_k = 1,0`, hoàn sai 0đ, lỗi hãng oan 0, lộ PII 0. Bộ nền trong cùng report cũng đạt 5/5 với các giá trị này. |
-| Bằng chứng 2 | `R-S6-grade-20261119-172613-ab2583` đạt 3/3 `business_ops` trên cả hai bộ. S6: 5.228đ/ticket, ROI 0,91, 0 ca ùn. Bộ nền: 4.510đ/ticket, ROI 1,22, 0 ca ùn. |
-| Bằng chứng 3 | `R-S6-grade-20261119-172613-ab2583` ghi `escalation_rate` S6 = 0,1667 và bộ nền = 0,2364, cùng dưới 0,35. Độ phủ cả hai bộ là 100%. Integrity, visible, regression và monitor đều đạt. |
+| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | Mốc after `R-S6-after-20261119-173150-704885` đạt 5/5 `required` trên S6. `pass_rate = pass_k = 1,0`, hoàn sai 0đ, lỗi hãng oan 0, lộ PII 0. Bộ nền trong cùng report cũng đạt 5/5 với các giá trị này. |
+| Bằng chứng 2 | `R-S6-grade-20261119-173149-704885` đạt 3/3 `business_ops` trên cả hai bộ. S6: 5.228đ/ticket, ROI 0,91, 0 ca ùn. Bộ nền: 4.510đ/ticket, ROI 1,22, 0 ca ùn. |
+| Bằng chứng 3 | `R-S6-grade-20261119-173149-704885` ghi `escalation_rate` S6 = 0,1667 và bộ nền = 0,2364, cùng dưới 0,35. Độ phủ cả hai bộ là 100%. Integrity, visible, regression và monitor đều đạt (`ambiguous_parcel_rate` và `model_override_rate` sáng đèn). |
 | Khớp dòng nào trong `decision_rule` đã ký? | **Tiếp tục**. Đạt toàn bộ 5 ngưỡng required, đạt đủ 3 ngưỡng business_ops, escalation_rate <= 0.35 và không vi phạm stop_condition trên bộ thử. |
 | Nếu Thu hẹp: cắt kho nào / còn bao nhiêu phần trăm / mấy người trực, và ticket bị cắt đi đâu | Không áp dụng. |
 | Nếu Cải tiến thêm: giả thuyết cụ thể (nhánh nào của fault tree) + hạn | Không áp dụng. |
@@ -425,7 +425,7 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 
 **Chỉ ở v2**
 - Giữ **Tiếp tục** như v1. Sau sửa, hai bộ đều có `pass_rate = pass_k = 1,0`. Trên S6, lỗi hãng oan giảm từ 25 ở prepared xuống 0.
-- Report `R-S6-grade-20261119-172613-ab2583` đạt `PASS-VISIBLE`. Các mục tự kiểm đã chạy đều xanh. Test ẩn chưa có kết quả.
+- Report `R-S6-grade-20261119-173149-704885` đạt `PASS-VISIBLE`. Các mục tự kiểm đã chạy đều xanh. Test ẩn chưa có kết quả.
 - Cổng vòng 1 giảm lỗi hãng oan từ 40 ở base xuống 25 ở prepared. Nó còn bỏ sót việc chọn đúng kiện trong đơn đa kiện và chưa áp trần 2 lỗi tự động mỗi hãng/ngày.
 - Report ghi **"Được phép cân nhắc 'Tiếp tục'"**. Quyết định khớp với ngưỡng đã ký và kết quả của cả S6 lẫn bộ nền.
 - Bộ thử chưa có test ẩn và chưa đo tracking sai ở production, ví dụ mã tài xế chưa đổi sau bàn giao. Có thể tiếp tục pilot và cần đối soát tracking trước Gate 2.

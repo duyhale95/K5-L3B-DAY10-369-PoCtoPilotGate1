@@ -33,18 +33,21 @@ Trưởng nhóm · Vai **Sản phẩm và kinh doanh**: lập kế hoạch chia 
 
 ### Đóng góp cụ thể
 
-- Cấu hình repo, bảng thành viên `TEAM.md`, kế hoạch phân công không xung đột file.
-- Hoàn thiện Phiếu A và ký `config/acceptance_criteria.json` trước khi chạy đánh giá.
-- Hoàn thiện bản đồ dữ liệu, drift và cổng `business` vòng 1.
+- Cấu hình repo, bảng thành viên `TEAM.md`, lập `PLAN.md` phân công 3 vai không xung đột Git.
+- Hoàn thiện Phiếu A và ký `config/acceptance_criteria.json` (`6e4f816`) trước khi chạy đánh giá.
+- Hoàn thiện bản đồ dữ liệu, drift, cổng `business` vòng 1 và chốt Gate v1 (Phiếu B).
+- Kéo thẻ sự cố `S6` (`0d86d8d`), review & merge PR #1–#4, hoàn thiện C0–C1, C5, kiểm tra đồng bộ `submission/` và gom bài cuối.
 
 ### Bằng chứng
 
-- Commit `Sign acceptance criteria` và `CP3: ...`
-- `templates/form-a-criteria.md`, `config/acceptance_criteria.json`, `templates/form-b-evaluation-gates.md` (mục B3, B7.4).
+- Commit `6e4f816` (`Sign acceptance criteria`), `0540a49` (v1), `0d86d8d` (`Nhan the S6`), `583a441` (PR #1), `a174095` (PR #2), `0eba096` (PR #4).
+- `templates/form-a-criteria.md`, `config/acceptance_criteria.json`, `templates/form-b-evaluation-gates.md`, `templates/form-c-incident.md`, báo cáo `R-S6-grade-20261119-173149-704885`.
 
 ### Exit ticket
 
-*(Điền cuối buổi trước khi nộp)*
+- **Một điều học được:** Phải ký tiêu chí chấp nhận trước khi chạy đo, và luôn kiểm soát rủi ro ở cấp hệ thống (cổng code, ngưỡng kinh doanh, vận hành, pháp lý) thay vì chỉ tin vào model; đặc biệt trên S6 khi tách kiện thì đơn vị chịu lỗi là `parcel_id` chứ không phải `order_id`.
+- **Một điều còn chưa chắc:** Trên dữ liệu pilot thật, độ trễ cập nhật tracking sau bàn giao đa kiện và tỉ lệ đơn không xác định kho (`?`) có làm thay đổi chi phí/ticket và SLA 60 phút vào giờ cao điểm hay không.
+- **Ghi nhận dùng AI:** Dùng trợ lý AI (Antigravity) để lập kế hoạch `PLAN.md`, soát config/rubric, rà soát PR của thành viên, tổng hợp Phiếu A/B/C và kiểm tra tính toàn vẹn bài nộp.
 
 ## NguyenThienBao-2A202603861
 
