@@ -15,11 +15,11 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 | --: | --------- | ---- | --- | :---------: |
 |   1 | Hà Lê Duy | 2A202603851 | Sản phẩm và kinh doanh | x |
 |   2 | Nguyễn Thiên Bảo | 2A202603861 | Kỹ sư cổng | |
-|   3 | Nguyễn Hoàng Gia An | 2A20260379 | Vận hành và pháp lý | |
+|   3 | Nguyễn Hoàng Gia An | 2A202603799 | Vận hành và pháp lý | |
 |   4 | | | | |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên:
-`["HaLeDuy-2A202603851", "NguyenThienBao-2A202603861", "NguyenHoangGiaAn-2A20260379"]`
+`["HaLeDuy-2A202603851", "NguyenThienBao-2A202603861", "NguyenHoangGiaAn-2A202603799"]`
 
 ## Cá nhân
 
@@ -69,7 +69,7 @@ Vai **Kỹ sư cổng**: Câu 1.3 (offline metric), chạy các lệnh CLI (`eva
 - **Một điều còn chưa chắc:** Trong pilot thật, mã kiện và nguyên nhân trễ có được cập nhật đủ nhanh và đủ chính xác để dùng làm căn cứ tự động không.
 - **Ghi nhận dùng AI:** Dùng Codex để hỗ trợ đọc trace, sửa `guards.py` và `monitors.py`, chạy kiểm thử và tổng hợp bằng chứng.
 
-## NguyenHoangGiaAn-2A20260379
+## NguyenHoangGiaAn-2A202603799
 
 ### Phần việc phụ trách
 
@@ -86,4 +86,6 @@ Vai **Vận hành và pháp lý**: Câu 1.2 (góc nhìn chị Oanh, chị Hạnh
 
 ### Exit ticket
 
-*(Điền cuối buổi trước khi nộp)*
+- **Một điều học được:** Em đối chiếu `S6-01@11` và thấy lệnh có thể dùng đúng số ngày trễ nhưng vẫn ghi lỗi oan nếu lấy hãng và tài xế của kiện khác. Khi chưa xác định được kiện, chuyển duyệt trước khi ghi giúp tránh cả hoàn sai lẫn quy sai. Report `R-S6-grade-20261119-165504-68b6a6` ghi lỗi hãng oan giảm từ 25 ở prepared xuống 0 ở after.
+- **Một điều còn chưa chắc:** Trong pilot thật, tracking có theo kịp việc đổi tài xế sau bàn giao không. Em muốn đối chiếu mẫu với chứng từ hãng và đo thời gian chờ duyệt giờ cao điểm trước Gate 2.
+- **Ghi nhận dùng AI:** Em dùng Codex để đọc trace và report, soạn C3.2/C4/C6/C9/C10/C11, cập nhật hai JSON, chạy kiểm thử và chuẩn bị PR #2.
