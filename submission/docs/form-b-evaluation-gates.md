@@ -117,7 +117,7 @@ Tool chọn phân tích: `file_carrier_fault` và `notify_carrier`
 | `delay_days` (từ `llm_extract` vào `file_carrier_fault`) | **WRONG** | Model tin lời khách `claimed_delay_days = 5` thay vì `db_delay_days = 2` (`T-002@55`) | Hãng `VNX` bị ghi oan 1 strike (`100k/strike`) | Chưa có ở baseline | `write_gate` kiểm tra `H.carrier_at_fault(policy, parcel, db_delay)` → `escalate` (tầng chặn trước ghi) |
 | `policy_id` / `delay_cause` | **INVALID** | Dùng chính sách hết hạn (`REFUND-v2`) hoặc ghi lỗi hãng khi `delay_cause = CUSTOMER_ABSENT` | Sai đối tượng chịu trách nhiệm, kế toán không khớp sổ | `H.effective_policy` có sẵn nhưng chưa ép ở gate | `write_gate` dùng `effective_policy(..., ctx.as_of)` đối chiếu `fault_causes` (tầng chặn) |
 | `payload` trong `notify_carrier` | **PERTURBED** | Khách chèn SĐT/địa chỉ hoặc câu lệnh vào `customer_note`, bị chép nguyên văn gửi sang hãng | Lộ PII khách hàng ra bên thứ ba (vi phạm `pii_leaks_max = 0`) | Chưa có lọc trường | `write_gate` trên `notify_carrier` xóa các trường trong `legal.pii_fields_blocked_to_third_party` (tầng lọc/sửa payload) |
-| `approval_id` (nhánh chưa thấy trên trace base) | **INCOMPLETE** | Đơn giá trị cao (`O-1008`, >200k) nhưng `approval_id` hết hạn (`A-0031`, `2026-10-01`) hoặc không khớp `order_id` | Chi hoàn vượt hạn mức không có phê duyệt hợp lệ | Chưa kiểm hạn/trạng thái ở vòng 1 | Ghi nhận vào Risk register để theo dõi/bổ sung nếu gặp sự cố |
+| `approval_id` (nhánh chưa thấy trên trace base) | **INVALID** | Ví dụ giả định: gán cho `O-1008` phê duyệt `A-0031`, vốn thuộc `O-0911`, đã dùng và hết hạn ngày `2026-10-01`. | Chi hoàn vượt hạn mức không có phê duyệt hợp lệ | Chưa kiểm hạn/trạng thái ở vòng 1 | Ghi nhận vào Risk register để theo dõi/bổ sung nếu gặp sự cố |
 
 **Mở rộng ra ngoài kỹ thuật:**
 
@@ -156,8 +156,8 @@ Tool chọn phân tích: `file_carrier_fault` và `notify_carrier`
 | Model tin lời khách khai số ngày trễ thay vì tracking DB, gây hoàn tiền sai và ghi lỗi oan cho hãng dẫn đến hãng cắt hợp tác | **Kỹ thuật** | Có (`T-002@55`) | **Cổng code (`guards.py`)**: `write_gate` đối chiếu `issue_refund` & `file_carrier_fault` với DB (`entitlement_vnd`, `carrier_at_fault`) |
 | Ngày cao điểm nhiều đơn hợp lệ dồn lại làm tổng tiền hoàn tự động vượt trần ngân sách ngày của Finance | **Kinh doanh** | Có (`ops_limits`) | **Cổng config + code**: `daily_refund_cap_vnd = 1500000` + `write_gate` chuyển người duyệt khi vượt |
 | Lượng ca chuyển người duyệt tăng gấp 3 trong giờ cao điểm khiến 1 người trực không kịp xử lý, quá SLA 60 phút | **Con người và vận hành** | Có (`ops_facts`, `eval` queue) | **Cổng config + Runbook**: `reviewers_on_shift = 1`, `max_queue_wait_minutes = 60` + quy trình gọi thêm người ở B7.6 |
-| Payload báo hãng `notify_carrier` vô tình gửi kèm SĐT/địa chỉ trong `customer_note` làm lộ PII khách hàng | **Pháp lý** | Có (`trace T-002@55`) | **Cổng config + code**: `pii_fields_blocked_to_third_party` + `write_gate` xóa trường bị chặn khỏi payload `notify_carrier` |
-| Chính sách `REFUND-v4` có hiệu lực từ `2026-12-01` nhưng hệ thống hoặc nhân viên không cập nhật kịp ngưỡng mới | **Kinh doanh** | Chưa (ngày hiện tại `2026-11-16`) | Đưa vào **Risk register** (kiểm tra lại khi sang tháng 12) |
+| Payload báo hãng `notify_carrier` vô tình gửi kèm SĐT/địa chỉ trong `customer_note` làm lộ PII khách hàng | **Pháp lý** | Trace base `T-002@55` cho thấy `customer_note` đi vào payload gửi hãng. Ca đó ghi nhận 0 lần lộ PII. | **Cổng config + code**: `pii_fields_blocked_to_third_party` + `write_gate` xóa trường bị chặn khỏi payload `notify_carrier` |
+| Chính sách `REFUND-v4` có hiệu lực từ `2026-12-01` nhưng hệ thống hoặc nhân viên không cập nhật kịp ngưỡng mới | **Kinh doanh** | Chưa trong lần chạy ngày mô phỏng `2026-11-16` | Đưa vào **Risk register** (kiểm tra lại khi sang tháng 12) |
 
 ---
 
@@ -195,11 +195,11 @@ Tool chọn phân tích: `file_carrier_fault` và `notify_carrier`
 | `business.daily_refund_cap_vnd` | `1500000` | Giữ biên an toàn 25% dưới trần ngân sách ngày `2.000.000đ` của Finance (`ops_limits.daily_auto_refund_budget_vnd`) để tránh bội chi bất ngờ. |
 | `business.cost_budget_per_ticket_vnd` | `1500` | Khớp đúng trần chi phí LLM tối đa cho mỗi ticket `1.500đ` trong `ops_limits.max_llm_cost_per_ticket_vnd`. |
 | `business.pilot_scope` | `{"mode": "all", "warehouses": [], "percent": 100}` | Ở vòng 1 thử nghiệm 100% phạm vi bộ nền (22 ticket/ngày) vì tải duyệt chỉ 6 ca/ngày, nằm gọn trong công suất 1 người trực. |
-| `business.roi_min` | `0.25` | Khớp ngưỡng `roi_min = 0.25` đã ký trong Bản tiêu chí (đảm bảo tiết kiệm ít nhất 25% so với chi phí làm tay `10.000đ/ticket`). |
+| `business.roi_min` | `0.25` | Khớp ngưỡng đã ký. ROI là tiết kiệm ròng chia chi phí pilot. `0.25` nghĩa là tiết kiệm ròng ít nhất 0,25đ trên mỗi 1đ chi cho pilot. |
 
 ### B7.5 · Câu 2.10 · Cổng con người, vận hành, pháp lý + Runbook phần 1–3
 
-**Người viết (vai Vận hành và pháp lý):** Nguyễn Hoàng Gia An (`2A20260379`)
+**Người viết (vai Vận hành và pháp lý):** Nguyễn Hoàng Gia An (`2A202603799`)
 
 #### Runbook 1 · Ai chịu trách nhiệm
 
@@ -216,10 +216,10 @@ Số người trực duyệt mỗi ca: `1` · Mỗi giờ duyệt được: `6` 
 
 | Tín hiệu | Lấy ở đâu | Bình thường | Ngưỡng VÀNG → việc làm | Ngưỡng ĐỎ → việc làm | Ai quyết |
 |---|---|---|---|---|---|
-| Thời gian chờ người duyệt lâu nhất | Dòng `hàng chờ người duyệt` trong report `eval`/`grade` | `<= 30 phút` | `31–59 phút` → `NV-HANH` báo `NV-TUNG` chuẩn bị gọi thêm người | `>= 60 phút` (vượt `max_queue_wait_minutes`) → Gọi thêm người duyệt hoặc thu hẹp `pilot_scope` | `NV-TUNG` |
+| Thời gian chờ người duyệt lâu nhất | Dòng `hàng chờ người duyệt` trong report `eval`/`grade` | `<= 30 phút` | `31–59 phút` → `NV-HANH` báo `NV-TUNG` chuẩn bị gọi thêm người | `>= 60 phút` (chạm ngưỡng hành động, `max_queue_wait_minutes = 60`) → Gọi thêm người duyệt hoặc thu hẹp `pilot_scope` | `NV-TUNG` |
 | Số ca bị ùn | `queue_stuck` trong report `eval`/`grade` | `0` ca | `1` ca sắp chạm SLA → ưu tiên xử lý hàng đợi | `>= 1` ca bị ùn quá 60 phút → Thu hẹp `pilot_scope` xuống 50% | `NV-TUNG` |
 | Chi phí mỗi ticket so với làm tay | Dòng `chi phí mỗi ticket` trong report `eval`/`grade` | `<= 5.500đ` | `5.501–6.500đ` → Kiểm tra `escalation_rate` và chi phí LLM | `> 6.500đ` (hoặc `> 10.000đ` làm tay) → Tạm dừng mở rộng, rà soát lại cổng | `HaLeDuy` / `NV-TUNG` |
-| Tổng tiền hoàn tự động trong ngày so với trần | Dòng `tổng hoàn tự động một ngày` trong report | `<= 1.200.000đ` | `1.200.001–1.500.000đ` → Theo dõi sát | `> 1.500.000đ` → Tự động `escalate` mọi ca hoàn tiếp theo trong ngày | Hệ thống + `NV-HANH` |
+| Tổng tiền hoàn tự động trong ngày so với trần | Dòng `tổng hoàn tự động một ngày` trong report | `<= 1.200.000đ` | `1.200.001–1.500.000đ` → Theo dõi sát | Nếu khoản tự động tiếp theo làm tổng ngày vượt 1.500.000đ, chuyển khoản đó sang duyệt | Hệ thống + `NV-HANH` |
 | Tiền hoàn sai | `wrongful_refund_vnd` trong report | `0đ` | — | `> 0đ` → Tắt `issue_refund` trong `switches.json`, kiểm tra trace | `NV-TUNG` |
 | Lỗi ghi oan cho hãng / lộ PII | `wrongful_carrier_faults`, `pii_leaks` trong report | `0` | — | `>= 1` → Tắt ngay `file_carrier_fault` / `notify_carrier` trong `switches.json` | `NV-TUNG` |
 
@@ -227,7 +227,7 @@ Số người trực duyệt mỗi ca: `1` · Mỗi giờ duyệt được: `6` 
 
 - Dừng một phần khi: Có `>= 1` lỗi ghi oan cho hãng (`tắt file_carrier_fault`), hoặc hàng đợi vượt SLA 60 phút liên tiếp (`thu hẹp pilot_scope`).
 - Dừng hẳn khi: Có `>= 1` ca lộ PII ra bên thứ ba, hoặc hoàn tiền sai lặp lại không chặn được bằng cổng.
-- Cách dừng, từng bước: Mở `config/switches.json` đặt `"issue_refund": "off"` hoặc `"file_carrier_fault": "off"`, hoặc thu hẹp `business.pilot_scope` trong `config/operating_gates.json`.
+- Cách dừng, từng bước: Tùng đặt công tắc thao tác liên quan thành `off` trong `config/switches.json`: `issue_refund` khi hoàn sai, `file_carrier_fault` khi ghi oan, `notify_carrier` và `send_reply` khi lộ PII ra bên thứ ba. Với quá tải, thu hẹp `business.pilot_scope` trong `config/operating_gates.json`.
 - Từ tín hiệu đỏ đến lúc dừng xong tối đa `10` phút; người bấm: `Lê Thanh Tùng (NV-TUNG)`.
 - Khi đã dừng, ticket đang chờ đi đâu, ai xử lý: Chuyển toàn bộ sang quy trình CSKH thủ công do `Trần Thị Hạnh (NV-HANH)` phân công ca trực xử lý.
 - Điều kiện để bật lại, ai ký: Đã xác định nguyên nhân gốc, sửa code/config và chạy lại `lab10.eval` đạt 0 lỗi an toàn; do `NV-TUNG` và Trưởng nhóm (`HaLeDuy`) ký xác nhận.
@@ -236,11 +236,11 @@ Số người trực duyệt mỗi ca: `1` · Mỗi giờ duyệt được: `6` 
 
 | Câu hỏi | Trả lời (có số, có tên) |
 |---|---|
-| Giờ cao điểm là khi nào, bao nhiêu ticket mỗi giờ (dựa vào `ops_facts`)? | Ngày sale hoặc sau bão, lượng ticket có thể tăng gấp 3 so với mức nền ~22 ticket/ngày (tức ~9–15 ca chuyển duyệt/giờ). |
+| Giờ cao điểm là khi nào, bao nhiêu ticket mỗi giờ (dựa vào `ops_facts`)? | Bộ nền có 22 ticket/ca 8 giờ, trung bình 2,75 ticket/giờ. Nếu giả định tải tăng gấp 3, trung bình là 8,25 ticket/giờ. Với 27,27% lượt vào hàng chờ ở prepared (gồm kiểm mẫu), ước tính 2,25 lượt chờ/giờ nếu phân bố đều. Theo dõi cụm đến dồn qua độ dài hàng chờ và thời gian chờ lâu nhất. |
 | Ai trực giờ cao điểm, mấy người (khớp `operations.reviewers_on_shift`)? | Mặc định `1` người (`NV-HANH`, công suất `6 ca/giờ`). |
 | Ngưỡng nào thì **gọi thêm người**? Ai gọi? | Khi hàng chờ `>= 6 ca` hoặc thời gian chờ lâu nhất `>= 45 phút`, `NV-HANH` báo `NV-TUNG` gọi thêm 1 người duyệt dự phòng (phí standby `30.000đ` theo `ops_facts.reviewer_standby_fee_vnd`). |
 | Ngưỡng nào thì **thu hẹp** phạm vi hoặc **tắt** một thao tác ghi? Ai quyết? | Nếu đã thêm người mà chờ vẫn `>= 60 phút`, `NV-TUNG` thu hẹp `business.pilot_scope` về `50%` hoặc chỉ giữ kho `HN` và `HCM`. |
-| Thêm người thì chi phí mỗi ticket và ROI thay đổi thế nào? | Thêm 1 người trực tốn thêm `30.000đ` phí standby (`ops_facts`), làm chi phí/ticket tăng nhẹ nhưng giữ `queue_stuck = 0` và vẫn duy trì ROI dương đáng kể so với làm tay `10.000đ/ticket`. |
+| Thêm người thì chi phí mỗi ticket và ROI thay đổi thế nào? | Nếu gọi thêm 1 người, cập nhật số người trực từ 1 lên 2 và công suất kế hoạch từ 6 lên 12 ca/giờ. Phí standby tăng 30.000đ/ca. Nếu giữ nguyên 22 ticket/ca và các chi phí khác, ước tính tăng khoảng 1.364đ/ticket lên 5.874đ, ROI từ 1,22 xuống khoảng 0,70. Cần đo lại hàng chờ với tải thực tế. |
 
 ---
 
