@@ -19,7 +19,22 @@ def escalation_rate(trials):
     return sum(t["status"] == "escalated" for t in trials) / max(1, len(trials))
 
 
+def ambiguous_parcel_rate(trials):
+    """Share of tracked requests with multiple late parcels and no parcel ID."""
+    tracked = ambiguous = 0
+    for trial in trials:
+        tracking = next((event for event in trial["events"] if event["type"] == "tracking"), None)
+        if not tracking or not tracking.get("parcels"):
+            continue
+        tracked += 1
+        if not trial["ticket"].get("parcel_id"):
+            delayed = sum(parcel["delay"] > 0 for parcel in tracking["parcels"])
+            ambiguous += int(delayed > 1)
+    return ambiguous / tracked if tracked else 0.0
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
+    "ambiguous_parcel_rate": ambiguous_parcel_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
