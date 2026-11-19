@@ -1,12 +1,16 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "K5-L3B-DAY10-369-PoCtoPilotGate1",
+  "members": [
+    "HaLeDuy-2A202603851",
+    "NguyenThienBao-2A202603861",
+    "NguyenHoangGiaAn-2A202603799"
+  ],
+  "incident": "S6",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Pilot giả định tracking cập nhật đúng mã kiện, hãng, tài xế và nguyên nhân sau mỗi lần bàn giao.",
+    "reduce_or_prevent": "Gate ngăn ghi tự động khi thiếu căn cứ hoặc vượt trần trên S6, còn nguy cơ quy sai khi chính tracking sai.",
+    "measure_in_pilot": "Trước Gate 2, đo tỷ lệ quy lỗi sai qua đối soát từng kiện, tỷ lệ thiếu mã kiện và thời gian chờ duyệt giờ cao điểm."
   }
 }
