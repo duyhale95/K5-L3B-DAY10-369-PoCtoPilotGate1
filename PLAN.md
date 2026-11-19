@@ -6,7 +6,7 @@
 |---|---|---|---|---|
 | **Hà Lê Duy** | `2A202603851` | Trưởng nhóm · Sản phẩm & Kinh doanh | `main` | `TEAM.md`, `templates/form-a-criteria.md`, `templates/form-b-evaluation-gates.md`, `templates/form-c-incident.md` (tổng hợp), `config/acceptance_criteria.json` (đã khóa) |
 | **Nguyễn Thiên Bảo** | `2A202603861` | Kỹ sư cổng | `feat/bao-gate-engineer` | `lab10/guards.py`, `lab10/monitors.py` |
-| **Nguyễn Hoàng Gia An** | `2A202603799` | Vận hành & Pháp lý | `feat/an-ops-legal` | `config/operating_gates.json`, `submission/submission.json` |
+| **Nguyễn Hoàng Gia An** | `2A20260379` | Vận hành & Pháp lý | `feat/an-ops-legal` | `config/operating_gates.json`, `submission/submission.json` |
 
 ---
 

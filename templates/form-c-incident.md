@@ -34,7 +34,6 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 | 2 | `R-S6-after-20261119-165501-bf477d` | `S6 · after` | Sửa `guards.py` (đối chiếu theo `parcel_id`, `escalate` khi đa kiện mơ hồ, chặn trần `2` lỗi/hãng/ngày) + thêm `ambiguous_parcel_rate` vào `monitors.py` | `1.0` (`[1.0, 1.0]`) | `1.0` | `0đ · 0 · 0` | `0.1667` (tổng chuyển `0.25`) | Toàn bộ 60 trials `S6` xanh, không còn hoàn sai hay lỗi hãng oan. |
 | 3 | `R-base-after-20261119-165502-bf477d` | `base · after` | (kiểm không regression trên bộ nền) | `1.0` (`[1.0, 1.0]`) | `1.0` | `0đ · 0 · 0` | `0.2364` (tổng chuyển `0.2727`) | Bộ nền giữ nguyên `110/110`, không làm hỏng ca cũ. |
 | 4 | `R-S6-grade-20261119-164651-bf477d` | `S6 · grade` | Tự kiểm tra toàn bộ 3 mốc `base · prepared · after` trên PR #1 | `1.0` | `1.0` | `0đ · 0 · 0` | `0.1667` | Đạt `PASS-VISIBLE`: `integrity ✅`, `criteria ✅`, `visible ✅`, `regression ✅`, `monitor ✅`. |
-| 5 | `R-S6-grade-20261119-174101-ab2583` | `S6 · grade cuối` | Chạy lại trên checkout có cùng byte code và config với bài nộp | `1.0` (`[1.0, 1.0]`) | `1.0` | `0đ · 0 · 0` | `0.1667` (tổng vào hàng chờ `0.25`) | `PASS-VISIBLE`, hai monitor có tín hiệu và bộ nền giữ `110/110`. |
 
 ---
 
@@ -321,7 +320,7 @@ vì cổng ghi không đọc ticket; còn hở nếu chính tracking DB sai.
 ### Bonus 2 · Lỗi chìm ngoài thẻ S6
 
 - **Chỉ số** `model_override_rate` đo tỷ lệ trial có ít nhất một sự kiện `model_override`. Chỉ đọc `trial["events"]`, đếm mỗi trial tối đa một lần rồi chia cho tổng số trial. Tập rỗng trả về 0.
-- **Kết quả** ở mốc after của report `R-S6-grade-20261119-174101-ab2583`: bộ nền `base` có `0.045455` (5/110, khoảng 4,55%), S6 có `0.0` (0/60).
+- **Kết quả** ở mốc after của report `R-S6-grade-20261119-172613-ab2583`: bộ nền `base` có `0.045455` (5/110, khoảng 4,55%), S6 có `0.0` (0/60).
 - **Trace `T-002@55` · bộ nền · after.** Dòng 02 có `db_delay_days = 2`. Dòng 03 `model_override` ghi `db: 2, ticket: 5`. Dòng 05 dùng 5 ngày, đề xuất hoàn 20.000đ và ghi lỗi hãng. Cổng `issue_refund` ở dòng 06 chuyển duyệt trước khi ghi, để sổ cái và sổ lỗi hãng rỗng. Chỉ số phát hiện sai lệch trong đề xuất ngay cả khi cổng đã ngăn tác hại.
 
 ---
