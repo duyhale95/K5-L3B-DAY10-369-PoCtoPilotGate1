@@ -54,16 +54,20 @@ Vai **Kỹ sư cổng**: Câu 1.3 (offline metric), chạy các lệnh CLI (`eva
 
 ### Đóng góp cụ thể
 
-- Chạy đánh giá mốc `base`, `after`, `prepared` và ghi nhật ký B0.
-- Viết cổng phòng ngừa trong `lab10/guards.py` và kiểm thử `--adhoc`.
+- Sửa cổng vòng 2 trong `lab10/guards.py` cho thẻ `S6` (`_resolve_parcel`, đối chiếu kiện–hãng–tài xế trước `file_carrier_fault`, chặn ghi vượt trần 2 lỗi/hãng/ngày, chuyển người duyệt khi đa kiện mơ hồ hoặc lệch quyền lợi).
+- Thêm chỉ số theo dõi mới `ambiguous_parcel_rate` trong `lab10/monitors.py`.
+- Chạy đánh giá `S6`, kiểm thử hồi quy `base`, dò trace `S6-01`, `S6-20`, `S6-40..43` và tổng hợp C2, C7, C8.
 
 ### Bằng chứng
 
-- `lab10/guards.py`, `lab10/guards_round1.py`, `templates/form-b-evaluation-gates.md` (mục B0, B1, B2, B7.1–B7.3).
+- Commit PR #1 `6c9ce0e` (`feat(gate): vong 2 guards va monitor cho S6`), merge `583a441`.
+- `lab10/guards.py`, `lab10/monitors.py`, `templates/form-c-incident.md` (C2, C7, C8), mã chạy `R-S6-grade-20261119-164651-bf477d`.
 
 ### Exit ticket
 
-*(Điền cuối buổi trước khi nộp)*
+- **Một điều học được:** Với đơn tách kiện, phải đối chiếu ở cấp kiện trước khi ghi. Khi chưa xác định được kiện, chuyển người trước lúc hoàn tiền mới tránh được cả chi sai lẫn quy lỗi oan.
+- **Một điều còn chưa chắc:** Trong pilot thật, mã kiện và nguyên nhân trễ có được cập nhật đủ nhanh và đủ chính xác để dùng làm căn cứ tự động không.
+- **Ghi nhận dùng AI:** Dùng Codex để hỗ trợ đọc trace, sửa `guards.py` và `monitors.py`, chạy kiểm thử và tổng hợp bằng chứng.
 
 ## NguyenHoangGiaAn-2A20260379
 
