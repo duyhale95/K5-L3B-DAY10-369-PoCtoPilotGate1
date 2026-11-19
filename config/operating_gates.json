@@ -18,7 +18,8 @@
     "max_queue_wait_minutes": 60,
     "stop_conditions": [
       "Khi có 1 ca lộ PII ra bên thứ ba thì tắt notify_carrier/send_reply",
-      "Khi có 1 lỗi ghi oan cho hãng vận chuyển thì tắt file_carrier_fault",
+      "Khi xác nhận 1 lỗi ghi oan cho hãng vận chuyển, NV-TUNG tắt file_carrier_fault, báo kênh cảnh báo và chuyển NV-OANH đối soát để giữ khoản trừ thưởng liên quan trước khi chốt sổ",
+      "Khi một hãng chạm trần 2 lỗi tự động trong ngày, giữ phần ghi lỗi tiếp theo ở chế độ duyệt thủ công và báo NV-HANH đối chiếu mã kiện, hãng, tài xế và nguyên nhân có chứng từ trước khi ghi thêm",
       "Khi hàng chờ vượt SLA 60 phút liên tiếp thì thu hẹp pilot_scope"
     ],
     "alert_channel": "slack:#logix-refund-pilot-alerts",
