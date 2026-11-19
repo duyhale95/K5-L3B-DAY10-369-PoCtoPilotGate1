@@ -317,6 +317,12 @@ vì cổng ghi không đọc ticket; còn hở nếu chính tracking DB sai.
 | **Điểm mù** (chỉ số này KHÔNG thấy gì) | Không xác minh dữ liệu tracking đúng hay sai thực tế, không kiểm tra `parcel_id` đã nhập có đúng kiện khách khiếu nại không, hay hãng có bị ghi lỗi oan do lỗi nhập liệu ở kho không. |
 | Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | `0.0` (`0%`) trên bộ nền `base` · `0.166667` (`16,67%`, 10/60 lượt) trên thẻ `S6` (cả trước và sau sửa). |
 
+### Bonus 2 · Lỗi chìm ngoài thẻ S6
+
+- **Chỉ số** `model_override_rate` đo tỷ lệ trial có ít nhất một sự kiện `model_override`. Chỉ đọc `trial["events"]`, đếm mỗi trial tối đa một lần rồi chia cho tổng số trial. Tập rỗng trả về 0.
+- **Kết quả** ở mốc after của report `R-S6-grade-20261119-172613-ab2583`: bộ nền `base` có `0.045455` (5/110, khoảng 4,55%), S6 có `0.0` (0/60).
+- **Trace `T-002@55` · bộ nền · after.** Dòng 02 có `db_delay_days = 2`. Dòng 03 `model_override` ghi `db: 2, ticket: 5`. Dòng 05 dùng 5 ngày, đề xuất hoàn 20.000đ và ghi lỗi hãng. Cổng `issue_refund` ở dòng 06 chuyển duyệt trước khi ghi, để sổ cái và sổ lỗi hãng rỗng. Chỉ số phát hiện sai lệch trong đề xuất ngay cả khi cổng đã ngăn tác hại.
+
 ---
 
 <a id="c9"></a>
@@ -401,30 +407,30 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 
 | | **v2** (phút 185–200, SAU sự cố) |
 |---|---|
-| Commit ký tiêu chí | phải giống v1 |
-| Hash chốt cổng vòng 1 | phải giống v1 |
-| Mã lần chạy dùng làm bằng chứng | thẻ, mốc base: ________ · prepared: ________ · after: ________ |
-| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | |
-| Kho hoặc hãng có số xấu nhất: ____. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? *(Khối "theo kho và hãng" trong output `lab10.eval` / `lab10.grade`, hoặc mục `by_segment` trong `report.json`.)* | |
-| Quyết định (khoanh một) | Tiếp tục · Thu hẹp · Cải tiến thêm · Dừng |
-| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | |
-| Bằng chứng 2 | |
-| Bằng chứng 3 | |
-| Khớp dòng nào trong `decision_rule` đã ký? | |
-| Nếu Thu hẹp: cắt kho nào / còn bao nhiêu phần trăm / mấy người trực, và ticket bị cắt đi đâu | |
-| Nếu Cải tiến thêm: giả thuyết cụ thể (nhánh nào của fault tree) + hạn | |
-| Nếu Dừng: bài học ghi lại | |
-| Ngày quyết định lại (trừ khi Dừng) | |
-| PIC ký | |
+| Commit ký tiêu chí | `6e4f816` (`Sign acceptance criteria`) |
+| Hash chốt cổng vòng 1 | `3e45ad2b` |
+| Mã lần chạy dùng làm bằng chứng | S6 · base `R-S6-before-20261119-172613-ab2583` · prepared `R-S6-prepared-20261119-172613-ab2583` · after `R-S6-after-20261119-172613-ab2583` |
+| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Không. Mốc after không có dòng vượt trần và đạt mọi ngưỡng đã ký. |
+| Kho hoặc hãng có số xấu nhất. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? | S6: kho `HCM` cao nhất ở 5.661đ/ticket. Bộ nền: kho chưa xác định `?` là 10.359đ/ticket, cao hơn 10.000đ làm tay, trên 5 trials. Giữ quyết định chung vì cả hai bộ đạt ngưỡng và các kho đã xác định vẫn rẻ hơn làm tay. Theo dõi riêng nhóm chưa rõ kho trong pilot. |
+| Quyết định (khoanh một) | **Tiếp tục** |
+| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | Mốc after `R-S6-after-20261119-172613-ab2583` đạt 5/5 `required` trên S6. `pass_rate = pass_k = 1,0`, hoàn sai 0đ, lỗi hãng oan 0, lộ PII 0. Bộ nền trong cùng report cũng đạt 5/5 với các giá trị này. |
+| Bằng chứng 2 | `R-S6-grade-20261119-172613-ab2583` đạt 3/3 `business_ops` trên cả hai bộ. S6: 5.228đ/ticket, ROI 0,91, 0 ca ùn. Bộ nền: 4.510đ/ticket, ROI 1,22, 0 ca ùn. |
+| Bằng chứng 3 | `R-S6-grade-20261119-172613-ab2583` ghi `escalation_rate` S6 = 0,1667 và bộ nền = 0,2364, cùng dưới 0,35. Độ phủ cả hai bộ là 100%. Integrity, visible, regression và monitor đều đạt. |
+| Khớp dòng nào trong `decision_rule` đã ký? | **Tiếp tục**. Đạt toàn bộ 5 ngưỡng required, đạt đủ 3 ngưỡng business_ops, escalation_rate <= 0.35 và không vi phạm stop_condition trên bộ thử. |
+| Nếu Thu hẹp: cắt kho nào / còn bao nhiêu phần trăm / mấy người trực, và ticket bị cắt đi đâu | Không áp dụng. |
+| Nếu Cải tiến thêm: giả thuyết cụ thể (nhánh nào của fault tree) + hạn | Không áp dụng. |
+| Nếu Dừng: bài học ghi lại | Không áp dụng. |
+| Ngày quyết định lại (trừ khi Dừng) | `2026-11-26` |
+| PIC ký | `HaLeDuy-2A202603851` |
 
 **Chỉ ở v2**
-- Quyết định đổi hay giữ so với v1? Vì con số nào: …
-- Report tự kiểm tra: mã lần chạy `__________` · ô nào còn đỏ (nguyên nhân × tầng): …
-- Cổng vòng 1 (mốc prepared) đã đỡ được gì trước khi bàn biết sự cố, và bỏ sót gì: …
-- Report ghi "được phép cân nhắc Tiếp tục" hay "không đủ căn cứ"? Quyết định của bàn có khớp không: …
-- Một thứ bộ thử hôm nay chưa đo, và nó ảnh hưởng quyết định ra sao: …
+- Giữ **Tiếp tục** như v1. Sau sửa, hai bộ đều có `pass_rate = pass_k = 1,0`. Trên S6, lỗi hãng oan giảm từ 25 ở prepared xuống 0.
+- Report `R-S6-grade-20261119-172613-ab2583` đạt `PASS-VISIBLE`. Các mục tự kiểm đã chạy đều xanh. Test ẩn chưa có kết quả.
+- Cổng vòng 1 giảm lỗi hãng oan từ 40 ở base xuống 25 ở prepared. Nó còn bỏ sót việc chọn đúng kiện trong đơn đa kiện và chưa áp trần 2 lỗi tự động mỗi hãng/ngày.
+- Report ghi **"Được phép cân nhắc 'Tiếp tục'"**. Quyết định khớp với ngưỡng đã ký và kết quả của cả S6 lẫn bộ nền.
+- Bộ thử chưa có test ẩn và chưa đo tracking sai ở production, ví dụ mã tài xế chưa đổi sau bàn giao. Có thể tiếp tục pilot và cần đối soát tracking trước Gate 2.
 
 **Ba dòng bắt buộc** (chép nguyên ba câu này sang `submission/submission.json`, mục `three_lines`)
-1. Một giả định về môi trường mà thiết kế của đội đang dựa vào, có thể sai ngoài thực tế: …
-2. Gate của đội chỉ GIẢM khả năng hay thực sự NGĂN được tác hại? Vì sao: …
-3. Vì data là mock, cần đo lại gì trong pilot thật trước Bước đánh giá 2: …
+1. Pilot giả định tracking cập nhật đúng mã kiện, hãng, tài xế và nguyên nhân sau mỗi lần bàn giao.
+2. Gate ngăn ghi tự động khi thiếu căn cứ hoặc vượt trần trên S6, còn nguy cơ quy sai khi chính tracking sai.
+3. Trước Gate 2, đo tỷ lệ quy lỗi sai qua đối soát từng kiện, tỷ lệ thiếu mã kiện và thời gian chờ duyệt giờ cao điểm.

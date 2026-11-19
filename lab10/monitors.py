@@ -33,8 +33,18 @@ def ambiguous_parcel_rate(trials):
     return ambiguous / tracked if tracked else 0.0
 
 
+def model_override_rate(trials):
+    """Share of trials where the model overrode tracking data."""
+    overridden = sum(
+        any(event["type"] == "model_override" for event in trial["events"])
+        for trial in trials
+    )
+    return overridden / len(trials) if trials else 0.0
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
     "ambiguous_parcel_rate": ambiguous_parcel_rate,
+    "model_override_rate": model_override_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
